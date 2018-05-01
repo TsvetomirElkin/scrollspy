@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+
+	<title>scroll spy</title>
+
+	<script
+	  src="https://code.jquery.com/jquery-3.2.1.min.js"
+	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	  crossorigin="anonymous"></script>
+
+	<style type="text/css" media="screen">
+		* { padding: 0; margin: 0; }
+
+		.section  { position: relative; display: flex; align-items: center; justify-content: center; height: 100vh; }
+
+		.section[data-alt]{ background: skyblue; }
+		.section[data-offset]:after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,.2); }
+		.section[data-offset="100"]:after { height: 100px; }
+		.section[data-offset="200"]:after { height: 200px; }
+
+		.tile { position: fixed; top: 50%; right: 0; transform: translateY(-50%); width: 50px; height: 140px; background: skyblue; border: 1px solid #fff; z-index: 5; }
+		.tile:before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; border-bottom: dotted 1px red;  }
+
+		body.alt .tile { background: #fff; border-color: skyblue; }
+	</style>
+</head>
+<body>
+	<div class="tile"></div><!-- /.tile -->
+
+	<div class="main">
+		<section class="section" data-alt data-offset="100">
+			<h1>Section 1</h1>
+		</section><!-- /.section -->
+		
+		<section class="section">
+			<h1>Section 2</h1>
+		</section><!-- /.section -->
+		
+		<section class="section">
+			<h1>Section 3</h1>
+		</section><!-- /.section -->
+		
+		<section class="section" data-alt data-offset="200">
+			<h1>Section 4</h1>
+		</section><!-- /.section -->
+		
+		<section class="section">
+			<h1>Section 5</h1>
+		</section><!-- /.section -->
+		
+		<section class="section" data-alt>
+			<h1>Section 6</h1>
+		</section><!-- /.section -->
+	</div><!-- /.main -->
+</body>
+
+<script type="text/javascript">
+	const $win = $(window);
+
+	$win.on('load scroll', () => {
+		const winScrollTop = $win.scrollTop();
+		const winHeight = $win.outerHeight();
+		const winCenter = winScrollTop + winHeight / 2;
+		let alt = false;
+
+		$('[data-alt]').each((i, elem) => {
+			const thisHeight = $(elem).outerHeight();
+			const thisOffsetTop = $(elem).offset().top;
+			const offset = $(elem).is('[data-offset]') ? $(elem).data('offset') : 0;
+
+			if (winCenter > thisOffsetTop && winCenter < thisOffsetTop + thisHeight - offset) {
+				alt = true;
+				return false;
+			}
+			
+			alt = false;
+		});
+
+		$('body').toggleClass('alt', alt);
+	});
+</script>
+</html>
